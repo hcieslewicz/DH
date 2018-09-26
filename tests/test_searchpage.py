@@ -2,20 +2,25 @@ import unittest
 from selenium import webdriver
 from testsuite.pages import *
 from testsuite.locators import *
-from selenium.webdriver.firefox.options import Options
+import pytest
 
 
 class TestSearchPages(unittest.TestCase):
     def setUp(self):
 
-        options = Options()
-        options.add_argument('-headless')
-        binary_path = "E:\geckodriver\geckodriver-v0.19.1\geckodriver.exe"
-        self.driver = webdriver.Firefox(executable_path=binary_path, firefox_options=options)
-        self.driver.maximize_window()
+        grid_url = 'http://192.168.2.100:4444/wd/hub'
 
+        if pytest.config.getoption('driver') == 'firefox':
+            desired_capabilities = webdriver.DesiredCapabilities.FIREFOX
+        elif pytest.config.getoption('driver') == 'chrome':
+            desired_capabilities = webdriver.DesiredCapabilities.CHROME
+        elif pytest.config.getoption('driver') == 'ie':
+            desired_capabilities = webdriver.DesiredCapabilities.INTERNETEXPLORER
+
+        self.driver = webdriver.Remote(command_executor=grid_url, desired_capabilities=desired_capabilities)
         self.driver.get("https://www.amazon.de/")
-        self.driver.implicitly_wait(2)
+        self.driver.maximize_window()
+        self.driver.implicitly_wait(5)
 
     def test_a_page_load(self):
         #print "\n" + str(case_description(0))
@@ -34,7 +39,7 @@ class TestSearchPages(unittest.TestCase):
         search_results_page = SearchResultsPage(self.driver)
 
     def tearDown(self):
-        self.driver.close()
+        self.driver.quit()
 
 
 if __name__ == "__main__":

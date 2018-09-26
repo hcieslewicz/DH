@@ -24,9 +24,9 @@ pipeline {
                 // Uses the default system installation of Python
                 // Equivalent to withPythonEnv('/usr/bin/python')
                 //pysh 'python --version'
-                sh 'pip install nose selenium'
-                sh 'python ./tests/test_searchpage.py'
-                
+                sh 'pip install nose selenium pytest'
+                sh 'pytest tests/'
+
             }
         }
     }
